@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>참석 유무 확인 - 팝업</title>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    /* 팝업 단독 페이지 스타일 (iframe/window.open 으로도 사용 가능) */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .popup-card {
+      background: #fff;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 400px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      overflow: hidden;
+    }
+    .popup-header {
+      background: linear-gradient(135deg, #1a365d 0%, #2b6cb0 100%);
+      color: #fff;
+      padding: 22px 24px;
+    }
+    .popup-header .label { font-size: 0.8rem; color: #bee3f8; margin-bottom: 4px; }
+    .popup-header .name  { font-size: 1.4rem; font-weight: 700; }
+    .popup-header .dept  { font-size: 0.8rem; color: #bee3f8; margin-top: 4px; }
+    .popup-body { padding: 28px 24px; }
+    .form-group { margin-bottom: 20px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #4a5568;
+      margin-bottom: 8px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      color: #2d3748;
+      outline: none;
+      background: #f7fafc;
+      transition: border-color 0.15s;
+    }
+    .form-group input:focus,
+    .form-group select:focus {
+      border-color: #2b6cb0;
+      background: #fff;
+    }
+    .popup-footer {
+      padding: 0 24px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .btn-confirm {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #1a365d, #2b6cb0);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-confirm:hover { opacity: 0.88; }
+    .btn-cancel {
+      width: 100%;
+      padding: 11px;
+      background: #fff;
+      color: #718096;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    .btn-cancel:hover { background: #f7fafc; }
+    .toast {
+      display: none;
+      margin: 0 24px 16px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      text-align: center;
+    }
+    .toast.success { background: #c6f6d5; color: #276749; }
+    .toast.error   { background: #fed7d7; color: #9b2c2c; }
+  </style>
+</head>
+<body>
+  <div class="popup-card">
+    <div class="popup-header">
+      <div class="label">참석 여부 확인</div>
+      <div class="name" id="popup-name">-</div>
+      <div class="dept" id="popup-dept"></div>
+    </div>
+    <div class="popup-body">
+      <div class="form-group">
+        <label for="input-email">이메일 주소</label>
+        <input
+          type="email"
+          id="input-email"
+          placeholder="등록된 이메일 주소를 입력하세요"
+          autocomplete="off"
+        />
+      </div>
+      <div class="form-group">
+        <label for="select-classyn">참석 유무</label>
+        <select id="select-classyn">
+          <option value="Y">Yes — 참석</option>
+          <option value="N">No — 불참</option>
+        </select>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+    <div class="popup-footer">
+      <button class="btn-confirm" onclick="confirmAttendance()">확인</button>
+      <button class="btn-cancel" onclick="closePopup()">취소</button>
+    </div>
+  </div>
+
+  <script>
+    const API_BASE = "http://localhost:5000/api";
+    const params = new URLSearchParams(window.location.search);
+    const memberId   = params.get("id");
+    const memberName = params.get("name") || "";
+    const memberDept = params.get("dept") || "";
+    const memberTitle = params.get("title") || "";
+
+    document.getElementById("popup-name").textContent = memberName;
+    document.getElementById("popup-dept").textContent =
+      [memberDept, memberTitle].filter(Boolean).join(" · ");
+
+    function showToast(msg, type) {
+      const t = document.getElementById("toast");
+      t.textContent = msg;
+      t.className = "toast " + type;
+      t.style.display = "block";
+      if (type === "success") setTimeout(closePopup, 1800);
+    }
+
+    async function confirmAttendance() {
+      const email   = document.getElementById("input-email").value.trim();
+      const classyn = document.getElementById("select-classyn").value;
+      if (!email) { showToast("이메일 주소를 입력해 주세요.", "error"); return; }
+
+      try {
+        const res = await fetch(`${API_BASE}/attendance`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id: memberId, email, classyn }),
+        });
+        const data = await res.json();
+        if (data.success) {
+          showToast(data.message, "success");
+          if (window.opener) window.opener.location.reload();
+        } else {
+          showToast(data.message, "error");
+        }
+      } catch (e) {
+        showToast("서버 연결 오류가 발생했습니다.", "error");
+      }
+    }
+
+    function closePopup() {
+      if (window.opener) window.close();
+      else history.back();
+    }
+  </script>
+</body>
+</html>

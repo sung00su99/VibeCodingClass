@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vibe Coding 정보 공유 참석 유무 확인</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== TOP ===== -->
+  <header id="top-header">
+    <div id="header-logo">
+      <img src="../img/micube.jpg" alt="MICUBE SOLUTION" />
+    </div>
+    <h1>Vibe Coding 정보 공유 참석 유무 확인</h1>
+    <p class="subtitle">참석을 희망하시는 분은 이름 클릭 후 이메일 인증을 해주세요.</p>
+  </header>
+
+  <!-- ===== SUB TOP ===== -->
+  <div id="sub-header">
+    <span class="sub-header-text">미팅 일자: 2026. 06. 00 &nbsp;|&nbsp; 14:00 ~ 16:00</span>
+  </div>
+
+  <!-- ===== MAIN ===== -->
+  <main id="main-content">
+
+    <!-- 통계 바 -->
+    <div id="stats-bar">
+      <div class="stat-card">
+        <span>전체</span>
+        <span class="stat-value" id="stat-total">-</span>
+        <span>명</span>
+      </div>
+      <div class="stat-card attend">
+        <span>참석</span>
+        <span class="stat-value" id="stat-attend">-</span>
+        <span>명</span>
+      </div>
+      <div class="stat-card absent">
+        <span>미확인</span>
+        <span class="stat-value" id="stat-absent">-</span>
+        <span>명</span>
+      </div>
+    </div>
+
+    <!-- 멤버 카드 그리드 -->
+    <div id="loading">데이터를 불러오는 중...</div>
+    <div id="member-grid"></div>
+
+  </main>
+
+  <!-- ===== POPUP (별도 popup 폴더의 iframe) ===== -->
+  <div id="popup-overlay">
+    <div id="popup-box">
+      <div id="popup-header">
+        <div class="popup-label">참석 여부 확인</div>
+        <div class="popup-name" id="popup-name"></div>
+        <div style="font-size:0.8rem; color:#b2f0eb; margin-top:4px;" id="popup-dept"></div>
+      </div>
+      <div id="popup-body">
+        <div class="form-group">
+          <label for="input-email">이메일 주소</label>
+          <input
+            type="text"
+            id="input-email"
+            placeholder="아이디 입력 후 @ 누르면 자동완성"
+            autocomplete="off"
+          />
+        </div>
+        <div class="form-group">
+          <label for="select-classyn">참석 유무</label>
+          <select id="select-classyn">
+            <option value="Y">Yes — 참석</option>
+            <option value="N">No — 불참</option>
+          </select>
+        </div>
+      </div>
+      <div id="popup-footer">
+        <button id="btn-confirm" onclick="confirmAttendance()">확인</button>
+        <button id="btn-cancel" onclick="closePopup()">취소</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 토스트 메시지 -->
+  <div id="toast"></div>
+
+  <script src="js/main.js"></script>
+</body>
+</html>
