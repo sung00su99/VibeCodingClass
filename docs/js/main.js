@@ -1,4 +1,6 @@
-const API_BASE = "http://localhost:5000/api";
+const SUPABASE_URL  = "https://ktqkjvdzqxdkicvmlzni.supabase.co";
+const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cWtqdmR6cXhka2ljdm1sem5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgyMjEsImV4cCI6MjA5NTk5NDIyMX0.ECPVWXqmP337qmlJg3mHO2ViXrSPi1jvaiN1IZirWYk";
+const EDGE_ATTENDANCE = `${SUPABASE_URL}/functions/v1/attendance`;
 
 let members = [];
 let selectedMember = null;
@@ -6,7 +8,10 @@ let selectedMember = null;
 /* ===== 멤버 목록 로드 ===== */
 async function loadMembers() {
   try {
-    const res = await fetch(`${API_BASE}/members`);
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,classyn&order=seqno`,
+      { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } }
+    );
     if (!res.ok) throw new Error("서버 응답 오류");
     members = await res.json();
     renderGrid();
@@ -20,8 +25,8 @@ async function loadMembers() {
 /* ===== 통계 바 ===== */
 function renderStats() {
   const total = members.length;
-  const attend = members.filter((m) => m.CLASSYN === "Y").length;
-  const absent = members.filter((m) => m.CLASSYN === "N" && m.CLASSYN !== "").length;
+  const attend = members.filter((m) => m.classyn === "Y").length;
+  const absent = members.filter((m) => m.classyn === "N").length;
 
   document.getElementById("stat-total").textContent = total;
   document.getElementById("stat-attend").textContent = attend;
@@ -39,11 +44,11 @@ function renderGrid() {
   const depts = [];
   const deptMap = {};
   members.forEach((m) => {
-    if (!deptMap[m.DEPT]) {
-      deptMap[m.DEPT] = [];
-      depts.push(m.DEPT);
+    if (!deptMap[m.dept]) {
+      deptMap[m.dept] = [];
+      depts.push(m.dept);
     }
-    deptMap[m.DEPT].push(m);
+    deptMap[m.dept].push(m);
   });
 
   depts.forEach((dept) => {
@@ -60,16 +65,16 @@ function renderGrid() {
     deptMap[dept].forEach((m) => {
       const card = document.createElement("div");
       const badgeClass =
-        m.CLASSYN === "Y" ? "badge-y" : m.CLASSYN === "N" ? "badge-n" : "badge-pending";
-      const badgeText = m.CLASSYN === "Y" ? "참석" : m.CLASSYN === "N" ? "불참" : "미정";
-      const cardClass = m.CLASSYN === "Y" ? "attend" : m.CLASSYN === "N" ? "absent" : "";
+        m.classyn === "Y" ? "badge-y" : m.classyn === "N" ? "badge-n" : "badge-pending";
+      const badgeText = m.classyn === "Y" ? "참석" : m.classyn === "N" ? "불참" : "미정";
+      const cardClass = m.classyn === "Y" ? "attend" : m.classyn === "N" ? "absent" : "";
 
       card.className = `member-card ${cardClass}`;
       card.innerHTML = `
         <span class="card-badge ${badgeClass}">${badgeText}</span>
-        <div class="card-seqno">${escHtml(m.SEQNO || "")}</div>
-        <div class="card-name">${escHtml(m.NAME)}</div>
-        <div class="card-title">${escHtml(m.TITLE || "")}</div>
+        <div class="card-seqno">${escHtml(m.seqno || "")}</div>
+        <div class="card-name">${escHtml(m.name)}</div>
+        <div class="card-title">${escHtml(m.title || "")}</div>
       `;
       card.addEventListener("click", () => openPopup(m));
       cards.appendChild(card);
@@ -92,9 +97,9 @@ function escHtml(str) {
 /* ===== 팝업 열기 ===== */
 function openPopup(member) {
   selectedMember = member;
-  document.getElementById("popup-name").textContent = member.NAME;
+  document.getElementById("popup-name").textContent = member.name;
   document.getElementById("popup-dept").textContent =
-    [member.DEPT, member.TITLE].filter(Boolean).join(" · ");
+    [member.dept, member.title].filter(Boolean).join(" · ");
 
   document.getElementById("input-email").value = "";
   document.getElementById("select-classyn").value = "Y";
@@ -121,10 +126,10 @@ async function confirmAttendance() {
   }
 
   try {
-    const res = await fetch(`${API_BASE}/attendance`, {
+    const res = await fetch(EDGE_ATTENDANCE, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: selectedMember.ID, email, classyn }),
+      body: JSON.stringify({ id: selectedMember.id, email, classyn }),
     });
 
     const data = await res.json();
