@@ -47,9 +47,8 @@ body {
 #top-header .subtitle-notice {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #ff4d4d !important;
+  color: #fff;
   margin-top: 8px;
-  text-shadow: none;
 }
 
 #top-header .subtitle {
