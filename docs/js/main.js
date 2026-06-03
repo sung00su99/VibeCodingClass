@@ -128,7 +128,10 @@ async function confirmAttendance() {
   try {
     const res = await fetch(EDGE_ATTENDANCE, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${SUPABASE_ANON}`,
+      },
       body: JSON.stringify({ id: selectedMember.id, email, classyn }),
     });
 
