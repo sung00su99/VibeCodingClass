@@ -78,11 +78,81 @@ body {
   color: #b2dfdb;
 }
 
+/* ===== Page Body ===== */
+#page-body {
+  display: flex;
+  gap: 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 36px 24px;
+  align-items: flex-start;
+}
+
+/* ===== Left Panel ===== */
+#left-panel {
+  width: 260px;
+  flex-shrink: 0;
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-top: 4px solid #00a99d;
+  position: sticky;
+  top: 20px;
+}
+
+.left-panel-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #004d45;
+  line-height: 1.6;
+  margin-bottom: 16px;
+}
+
+.guest-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.guest-form input {
+  width: 100%;
+  padding: 9px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  color: #2d3748;
+  outline: none;
+  background: #f7fafc;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+  transition: border-color 0.15s;
+}
+
+.guest-form input:focus {
+  border-color: #00a99d;
+  background: #fff;
+}
+
+#btn-guest-add {
+  align-self: flex-end;
+  padding: 9px 24px;
+  background: linear-gradient(135deg, #004d45, #00a99d);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+
+#btn-guest-add:hover { opacity: 0.88; }
+
 /* ===== Main Content ===== */
 #main-content {
-  max-width: 1100px;
-  margin: 36px auto;
-  padding: 0 20px;
+  flex: 1;
+  min-width: 0;
 }
 
 /* ===== Stats Bar ===== */
@@ -198,6 +268,40 @@ body {
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 20px;
+}
+
+/* ===== Guest (기타) Card ===== */
+.member-card.guest {
+  cursor: default;
+}
+
+.member-card.guest:hover {
+  transform: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border-left-color: #48bb78;
+}
+
+.card-delete-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 5px 0;
+  width: 100%;
+  background: none;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  color: #e53e3e;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+  font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+
+.card-delete-btn:hover {
+  background: #fff5f5;
 }
 
 .badge-y {
@@ -375,7 +479,18 @@ body {
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 860px) {
+  #page-body {
+    flex-direction: column;
+    padding: 20px 16px;
+  }
+  #left-panel {
+    width: 100%;
+    position: static;
+  }
+}
+
 @media (max-width: 600px) {
   #top-header h1 { font-size: 1.3rem; }
-  #member-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .dept-cards { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 }
