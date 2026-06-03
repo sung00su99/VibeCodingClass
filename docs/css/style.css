@@ -44,12 +44,12 @@ body {
   margin-bottom: 10px;
 }
 
-.subtitle-notice {
+#top-header .subtitle-notice {
   font-size: 0.92rem;
   font-weight: 600;
-  color: #ff4d4d;
+  color: #ff4d4d !important;
   margin-top: 8px;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  text-shadow: none;
 }
 
 #top-header .subtitle {
