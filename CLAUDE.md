@@ -112,12 +112,26 @@ cd backend && python3 migrate_to_supabase.py
 ### 정렬 규칙
 - API `ORDER BY seqno` 반환
 - 정보화1팀: 권우진 최상단, 이하 직함순
-- 정보화2팀: 문성수·황혜림·김정주·이경환·우장일 고정, 이하 직함순
+- 정보화2팀: 황혜림·김정주·이경환·우장일 고정, 이하 직함순
 
 ## UI 브랜드
 - 메인 컬러: `#004d45`(다크 청록), `#00a99d`(청록)
 - 폰트: Noto Sans KR
-- 로고: `docs/img/micube.jpg` — 헤더 우측 상단
+- 로고: `docs/img/micube.jpg` — 헤더 우측 상단, `height: 35px`
+
+## 헤더 텍스트
+- subtitle: `참석을 희망하시는 분은 이름 클릭 후 이메일 인증을 해주세요.`
+- subtitle-notice (흰색): `※ 인증 된 이메일 주소로 미팅 전일 기준으로 공유 자료 발송 예정`
+
+## 미팅 정보
+- 일자: 2026. 06. 09
+- 시간: 14:00 ~ 16:00
+- 장소: 수원 사업장 회의실
+
+## 좌측 패널 문구
+- 안내: `대상자 외에 참석을 희망하시는 분은 아래 정보를 입력해 주시기 바랍니다.`
+- 이름 placeholder: `이름`
+- 이메일 placeholder: `이메일`
 
 <!-- SPECKIT START -->
 For additional context about technologies to be used, project structure,
