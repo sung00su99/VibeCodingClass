@@ -1,6 +1,6 @@
 const SUPABASE_URL  = "https://ktqkjvdzqxdkicvmlzni.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cWtqdmR6cXhka2ljdm1sem5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgyMjEsImV4cCI6MjA5NTk5NDIyMX0.ECPVWXqmP337qmlJg3mHO2ViXrSPi1jvaiN1IZirWYk";
-const EDGE_ATTENDANCE = `${SUPABASE_URL}/functions/v1/clever-handler`;
+const EDGE_ATTENDANCE = `${SUPABASE_URL}/functions/v1/attendance`;
 
 let members = [];
 let selectedMember = null;
