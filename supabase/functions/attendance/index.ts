@@ -112,7 +112,7 @@ Deno.serve(async (req: Request) => {
 
   const { error: updateError } = await supabase
     .from("vibe_coding_class_info")
-    .update({ classyn })
+    .update({ classyn, verified: true })
     .eq("id", memberId);
 
   if (updateError) {

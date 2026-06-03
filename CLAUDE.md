@@ -118,3 +118,8 @@ cd backend && python3 migrate_to_supabase.py
 - 메인 컬러: `#004d45`(다크 청록), `#00a99d`(청록)
 - 폰트: Noto Sans KR
 - 로고: `docs/img/micube.jpg` — 헤더 우측 상단
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->

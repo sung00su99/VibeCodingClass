@@ -9,7 +9,7 @@ let selectedMember = null;
 async function loadMembers() {
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,classyn&order=seqno`,
+      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,email,classyn,verified&order=seqno`,
       { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } }
     );
     if (!res.ok) throw new Error("서버 응답 오류");
@@ -180,11 +180,10 @@ function openPopup(member) {
     [member.dept, member.title].filter(Boolean).join(" · ");
 
   const emailInput = document.getElementById("input-email");
-  const storedEmail = localStorage.getItem(`vibeauth_${member.id}`);
   const isExempt = member.name === "문성수";
 
-  if (storedEmail && !isExempt) {
-    emailInput.value = storedEmail;
+  if (member.verified && !isExempt) {
+    emailInput.value = member.email || "";
     emailInput.disabled = true;
     emailInput.style.background = "#f0f4f8";
     emailInput.style.color = "#a0aec0";
@@ -225,9 +224,6 @@ async function confirmAttendance() {
   try {
     const data = await callEdge({ id: selectedMember.id, email, classyn });
     if (data.success) {
-      if (selectedMember.dept !== "기타") {
-        localStorage.setItem(`vibeauth_${selectedMember.id}`, email);
-      }
       showToast(data.message, "success");
       closePopup();
       await loadMembers();
