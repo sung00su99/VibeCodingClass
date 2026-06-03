@@ -179,15 +179,34 @@ function openPopup(member) {
   document.getElementById("popup-dept").textContent =
     [member.dept, member.title].filter(Boolean).join(" · ");
 
-  document.getElementById("input-email").value = "";
+  const emailInput = document.getElementById("input-email");
+  const storedEmail = localStorage.getItem(`vibeauth_${member.id}`);
+  const isExempt = member.name === "문성수";
+
+  if (storedEmail && !isExempt) {
+    emailInput.value = storedEmail;
+    emailInput.disabled = true;
+    emailInput.style.background = "#f0f4f8";
+    emailInput.style.color = "#a0aec0";
+  } else {
+    emailInput.value = "";
+    emailInput.disabled = false;
+    emailInput.style.background = "";
+    emailInput.style.color = "";
+  }
+
   document.getElementById("select-classyn").value = "Y";
   document.getElementById("popup-overlay").classList.add("active");
-  document.getElementById("input-email").focus();
+  if (!emailInput.disabled) emailInput.focus();
 }
 
 /* ===== 팝업 닫기 ===== */
 function closePopup() {
   document.getElementById("popup-overlay").classList.remove("active");
+  const emailInput = document.getElementById("input-email");
+  emailInput.disabled = false;
+  emailInput.style.background = "";
+  emailInput.style.color = "";
   selectedMember = null;
 }
 
@@ -206,6 +225,9 @@ async function confirmAttendance() {
   try {
     const data = await callEdge({ id: selectedMember.id, email, classyn });
     if (data.success) {
+      if (selectedMember.dept !== "기타") {
+        localStorage.setItem(`vibeauth_${selectedMember.id}`, email);
+      }
       showToast(data.message, "success");
       closePopup();
       await loadMembers();
