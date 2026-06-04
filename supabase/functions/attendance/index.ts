@@ -54,7 +54,7 @@ Deno.serve(async (req: Request) => {
 
     const { data, error } = await supabase
       .from("vibe_coding_class_info")
-      .insert({ name, email, dept: "기타", classyn: "Y", seqno: "9999" })
+      .insert({ name, email, dept: "기타", classyn: "Y", seqno: "9999", meetingdate: "2026-06-10" })
       .select("id")
       .single();
 
@@ -112,7 +112,7 @@ Deno.serve(async (req: Request) => {
 
   const { error: updateError } = await supabase
     .from("vibe_coding_class_info")
-    .update({ classyn })
+    .update({ classyn, meetingdate: "2026-06-10" })
     .eq("id", memberId);
 
   if (updateError) {

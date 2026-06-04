@@ -188,7 +188,8 @@ body {
   color: #00a99d;
 }
 
-.stat-card.attend .stat-value { color: #276749; }
+.stat-card.attend .stat-value  { color: #276749; }
+.stat-card.attend2 .stat-value { color: #00697a; }
 .stat-card.absent .stat-value  { color: #9b2c2c; }
 
 /* ===== Member Grid ===== */
@@ -265,6 +266,13 @@ body {
 .member-card .card-title {
   font-size: 0.8rem;
   color: #718096;
+}
+
+.member-card .card-meetingdate {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #00a99d;
+  white-space: nowrap;
 }
 
 .member-card .card-badge {

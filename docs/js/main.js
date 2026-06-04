@@ -9,7 +9,7 @@ let selectedMember = null;
 async function loadMembers() {
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,classyn&order=seqno`,
+      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,classyn,meetingdate&order=seqno`,
       { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } }
     );
     if (!res.ok) throw new Error("서버 응답 오류");
@@ -25,11 +25,14 @@ async function loadMembers() {
 /* ===== 통계 바 ===== */
 function renderStats() {
   const total = members.length;
-  const attend = members.filter((m) => m.classyn === "Y").length;
+  const attend1 = members.filter((m) => m.classyn === "Y" && m.meetingdate === "2026-06-09").length;
+  const attend2 = members.filter((m) => m.classyn === "Y" && m.meetingdate === "2026-06-10").length;
+  const unconfirmed = members.filter((m) => m.classyn !== "Y" && m.classyn !== "N").length;
 
   document.getElementById("stat-total").textContent = total;
-  document.getElementById("stat-attend").textContent = attend;
-  document.getElementById("stat-absent").textContent = total - attend;
+  document.getElementById("stat-attend1").textContent = attend1;
+  document.getElementById("stat-attend2").textContent = attend2;
+  document.getElementById("stat-absent").textContent = unconfirmed;
 }
 
 /* ===== 카드 그리드 렌더링 (DEPT별 섹션) ===== */
@@ -94,11 +97,14 @@ function renderGrid() {
         const badgeText = m.classyn === "Y" ? "참석" : m.classyn === "N" ? "불참" : "미정";
         const cardClass = m.classyn === "Y" ? "attend" : m.classyn === "N" ? "absent" : "";
 
+        const dateLabel = m.meetingdate
+          ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
+          : '';
         card.className = `member-card ${cardClass}`;
         card.innerHTML = `
           <span class="card-badge ${badgeClass}">${badgeText}</span>
           <div class="card-seqno">${escHtml(m.seqno || "")}</div>
-          <div class="card-name">${escHtml(m.name)}</div>
+          <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate">${dateLabel}</span></div>
           <div class="card-title">${escHtml(m.title || "")}</div>
         `;
         card.addEventListener("click", () => openPopup(m));

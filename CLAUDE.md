@@ -75,6 +75,7 @@ cd backend && python3 migrate_to_supabase.py
 | phone | TEXT | |
 | email | TEXT NOT NULL | 이메일 인증에 사용 |
 | classyn | TEXT | `Y` / `N` / 빈값(미확인) |
+| meetingdate | DATE | 참석 확정된 미팅 날짜 (예: 2026-06-09). classyn='Y' 시 설정 |
 | remarks | TEXT | |
 
 ## Edge Function — `attendance/index.ts`
