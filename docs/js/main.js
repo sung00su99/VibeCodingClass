@@ -75,6 +75,7 @@ function renderGrid() {
       const card = document.createElement("div");
 
       if (m.dept === "기타") {
+        const guestDateClass = m.meetingdate === "2026-06-09" ? "date-1" : m.meetingdate === "2026-06-10" ? "date-2" : "";
         const guestDateLabel = m.meetingdate
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
@@ -82,7 +83,7 @@ function renderGrid() {
         card.innerHTML = `
           <span class="card-badge badge-y">참석</span>
           <div class="card-seqno"></div>
-          <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate">${guestDateLabel}</span></div>
+          <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate ${guestDateClass}">${guestDateLabel}</span></div>
           <div class="card-title"></div>
           <button class="card-delete-btn" onclick="event.stopPropagation();deleteGuestMember(${m.id})">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -100,6 +101,7 @@ function renderGrid() {
         const badgeText = m.classyn === "Y" ? "참석" : m.classyn === "N" ? "불참" : "미정";
         const cardClass = m.classyn === "Y" ? "attend" : m.classyn === "N" ? "absent" : "";
 
+        const dateClass = m.meetingdate === "2026-06-09" ? "date-1" : m.meetingdate === "2026-06-10" ? "date-2" : "";
         const dateLabel = m.meetingdate
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
@@ -107,7 +109,7 @@ function renderGrid() {
         card.innerHTML = `
           <span class="card-badge ${badgeClass}">${badgeText}</span>
           <div class="card-seqno">${escHtml(m.seqno || "")}</div>
-          <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate">${dateLabel}</span></div>
+          <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate ${dateClass}">${dateLabel}</span></div>
           <div class="card-title">${escHtml(m.title || "")}</div>
         `;
         card.addEventListener("click", () => openPopup(m));
