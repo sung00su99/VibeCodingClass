@@ -116,7 +116,7 @@ function renderGrid() {
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
         const crownHtml = m.title === "팀장"
-          ? `<span class="crown-icon"><svg width="22" height="18" viewBox="0 0 26 22" xmlns="http://www.w3.org/2000/svg">
+          ? `<span class="crown-icon"><svg width="16" height="13" viewBox="0 0 26 22" xmlns="http://www.w3.org/2000/svg">
               <path d="M1 21 L1 10 L8 15 L13 1 L18 15 L25 10 L25 21 Z" fill="#FFD700" stroke="#B8860B" stroke-width="0.8" stroke-linejoin="round"/>
               <rect x="1" y="17" width="24" height="4.5" rx="1.5" fill="#B8860B"/>
               <circle cx="4" cy="10.5" r="1.8" fill="#FFD700" stroke="#B8860B" stroke-width="0.6"/>
