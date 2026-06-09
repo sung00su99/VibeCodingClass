@@ -271,10 +271,11 @@ body {
 .crown-icon {
   display: inline-flex;
   align-items: center;
-  margin-left: 4px;
+  margin-left: 5px;
   vertical-align: middle;
   position: relative;
-  top: -1px;
+  top: -2px;
+  filter: drop-shadow(0 1px 2px rgba(184,134,11,0.5));
 }
 
 .member-card .card-meetingdate {

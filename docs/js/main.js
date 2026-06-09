@@ -116,7 +116,16 @@ function renderGrid() {
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
         const crownHtml = m.title === "팀장"
-          ? `<span class="crown-icon"><svg width="11" height="11" viewBox="0 0 24 20" fill="#FFD700"><polygon points="0,20 4,8 12,14 20,2 22,14 28,8 24,20"/><rect x="0" y="17" width="24" height="3" fill="#FFD700"/></svg></span>`
+          ? `<span class="crown-icon"><svg width="22" height="18" viewBox="0 0 26 22" xmlns="http://www.w3.org/2000/svg">
+              <path d="M1 21 L1 10 L8 15 L13 1 L18 15 L25 10 L25 21 Z" fill="#FFD700" stroke="#B8860B" stroke-width="0.8" stroke-linejoin="round"/>
+              <rect x="1" y="17" width="24" height="4.5" rx="1.5" fill="#B8860B"/>
+              <circle cx="4" cy="10.5" r="1.8" fill="#FFD700" stroke="#B8860B" stroke-width="0.6"/>
+              <circle cx="13" cy="1.5" r="2" fill="#FFD700" stroke="#B8860B" stroke-width="0.6"/>
+              <circle cx="22" cy="10.5" r="1.8" fill="#FFD700" stroke="#B8860B" stroke-width="0.6"/>
+              <circle cx="7" cy="19.2" r="1.6" fill="#5B9BD5"/>
+              <circle cx="13" cy="19.2" r="2" fill="#E74C3C"/>
+              <circle cx="19" cy="19.2" r="1.6" fill="#5B9BD5"/>
+            </svg></span>`
           : "";
         card.className = `member-card ${cardClass}`;
         card.innerHTML = `
