@@ -37,6 +37,23 @@ function renderStats() {
   document.getElementById("stat-attend1").textContent = attend1;
   document.getElementById("stat-attend2").textContent = attend2;
   document.getElementById("stat-absent").textContent = unconfirmed;
+
+  updateGuestSessionOptions();
+}
+
+/* ===== 대상외 참석자 회차 옵션 갱신 ===== */
+function updateGuestSessionOptions() {
+  const sel = document.getElementById("guest-session");
+  if (!sel) return;
+  const cnt1 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_1).length;
+  const cnt2 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_2).length;
+  sel.options[0].text     = `1차 (06. 16) — 잔여 ${Math.max(0, MAX_SEATS - cnt1)}석`;
+  sel.options[0].disabled = cnt1 >= MAX_SEATS;
+  sel.options[1].text     = `2차 (06. 17) — 잔여 ${Math.max(0, MAX_SEATS - cnt2)}석`;
+  sel.options[1].disabled = cnt2 >= MAX_SEATS;
+  if (sel.options[sel.selectedIndex]?.disabled) {
+    sel.selectedIndex = sel.options[0].disabled ? 1 : 0;
+  }
 }
 
 const TITLE_ORDER = { "팀장": 0, "수석": 1, "수석보": 2, "책임": 3, "선임": 4, "사원": 5 };
@@ -173,8 +190,9 @@ async function callEdge(payload) {
 
 /* ===== 기타 멤버 추가 ===== */
 async function addGuestMember() {
-  const name  = document.getElementById("guest-name").value.trim();
-  const email = document.getElementById("guest-email").value.trim();
+  const name        = document.getElementById("guest-name").value.trim();
+  const email       = document.getElementById("guest-email").value.trim();
+  const meetingdate = document.getElementById("guest-session").value;
 
   if (!name)  { showToast("이름을 입력해 주세요.", "error");  return; }
   if (!email) { showToast("이메일을 입력해 주세요.", "error"); return; }
@@ -189,8 +207,14 @@ async function addGuestMember() {
     return;
   }
 
+  const taken = members.filter(m => m.classyn === "Y" && m.meetingdate === meetingdate).length;
+  if (taken >= MAX_SEATS) {
+    showToast("정원을 초과 하였습니다", "error");
+    return;
+  }
+
   try {
-    const data = await callEdge({ action: "add", name, email });
+    const data = await callEdge({ action: "add", name, email, meetingdate });
     if (data.success) {
       document.getElementById("guest-name").value  = "";
       document.getElementById("guest-email").value = "";

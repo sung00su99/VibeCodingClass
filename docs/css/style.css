@@ -122,7 +122,8 @@ body {
   gap: 10px;
 }
 
-.guest-form input {
+.guest-form input,
+.guest-form select {
   width: 100%;
   padding: 9px 12px;
   border: 1.5px solid #e2e8f0;
@@ -133,11 +134,22 @@ body {
   background: #f7fafc;
   font-family: "Noto Sans KR", "Malgun Gothic", sans-serif;
   transition: border-color 0.15s;
+  box-sizing: border-box;
 }
 
-.guest-form input:focus {
+.guest-form select {
+  cursor: pointer;
+  appearance: auto;
+}
+
+.guest-form input:focus,
+.guest-form select:focus {
   border-color: #00a99d;
   background: #fff;
+}
+
+.guest-form select option:disabled {
+  color: #a0aec0;
 }
 
 #btn-guest-add {
