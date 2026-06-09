@@ -1,6 +1,8 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const ALLOWED_ORIGIN = Deno.env.get("ALLOWED_ORIGIN") ?? "*";
+const VALID_DATES    = ["2026-06-16", "2026-06-17"];
+const MAX_SEATS      = 9;
 
 function corsHeaders(origin: string) {
   const allowed =
@@ -31,8 +33,14 @@ Deno.serve(async (req: Request) => {
     return json({ success: false, message: "허용되지 않는 메서드입니다." }, 405, origin);
   }
 
-  const VALID_DATES = ["2026-06-16", "2026-06-17"];
-  let body: { action?: unknown; id?: unknown; email?: unknown; classyn?: unknown; name?: unknown; meetingdate?: unknown };
+  let body: {
+    action?: unknown;
+    id?: unknown;
+    email?: unknown;
+    classyn?: unknown;
+    name?: unknown;
+    meetingdate?: unknown;
+  };
   try {
     body = await req.json();
   } catch {
@@ -47,13 +55,27 @@ Deno.serve(async (req: Request) => {
 
   // ── 기타 멤버 추가 ─────────────────────────────────────────────────────
   if (body.action === "add") {
-    const name = String(body.name ?? "").trim();
+    const name  = String(body.name  ?? "").trim();
     const email = String(body.email ?? "").trim().toLowerCase();
     if (!name || !email) {
       return json({ success: false, message: "이름과 이메일은 필수입니다." }, 400, origin);
     }
 
-    const addDate = VALID_DATES.includes(String(body.meetingdate ?? "")) ? String(body.meetingdate) : VALID_DATES[0];
+    const addDate = VALID_DATES.includes(String(body.meetingdate ?? ""))
+      ? String(body.meetingdate)
+      : VALID_DATES[0];
+
+    // 서버 측 정원 체크
+    const { count: seatCount } = await supabase
+      .from("vibe_coding_class_info")
+      .select("id", { count: "exact", head: true })
+      .eq("classyn", "Y")
+      .eq("meetingdate", addDate);
+
+    if ((seatCount ?? 0) >= MAX_SEATS) {
+      return json({ success: false, message: "정원을 초과 하였습니다." }, 200, origin);
+    }
+
     const { data, error } = await supabase
       .from("vibe_coding_class_info")
       .insert({ name, email, dept: "기타", classyn: "Y", seqno: "9999", meetingdate: addDate })
@@ -85,10 +107,10 @@ Deno.serve(async (req: Request) => {
     return json({ success: true, message: "삭제되었습니다." }, 200, origin);
   }
 
-  // ── 참석 등록 (기존) ───────────────────────────────────────────────────
-  const memberId = body.id;
+  // ── 참석 등록 ───────────────────────────────────────────────────────────
+  const memberId   = body.id;
   const inputEmail = String(body.email ?? "").trim().toLowerCase();
-  const classyn = body.classyn;
+  const classyn    = body.classyn;
 
   if (!memberId || !inputEmail) {
     return json({ success: false, message: "id와 email은 필수입니다." }, 400, origin);
@@ -97,6 +119,7 @@ Deno.serve(async (req: Request) => {
     return json({ success: false, message: "참석 유무 값이 올바르지 않습니다." }, 400, origin);
   }
 
+  // 이메일 인증
   const { data: member, error: fetchError } = await supabase
     .from("vibe_coding_class_info")
     .select("id, email")
@@ -106,14 +129,30 @@ Deno.serve(async (req: Request) => {
   if (fetchError || !member) {
     return json({ success: false, message: "사용자를 찾을 수 없습니다." }, 404, origin);
   }
-
-  const dbEmail = String(member.email ?? "").trim().toLowerCase();
-  if (inputEmail !== dbEmail) {
+  if (inputEmail !== String(member.email ?? "").trim().toLowerCase()) {
     return json({ success: false, message: "사용자 인증에 실패 했습니다." }, 401, origin);
   }
 
-  const rawDate = String(body.meetingdate ?? "").trim();
+  // meetingdate 결정
+  const rawDate     = String(body.meetingdate ?? "").trim();
   const meetingdate = (classyn === "Y" && VALID_DATES.includes(rawDate)) ? rawDate : null;
+
+  // 참석(Y) — 회차 유효성 및 서버 측 정원 체크 (자신 제외)
+  if (classyn === "Y") {
+    if (!meetingdate) {
+      return json({ success: false, message: "참석 회차를 올바르게 선택해 주세요." }, 400, origin);
+    }
+    const { count: seatCount } = await supabase
+      .from("vibe_coding_class_info")
+      .select("id", { count: "exact", head: true })
+      .eq("classyn", "Y")
+      .eq("meetingdate", meetingdate)
+      .neq("id", memberId);
+
+    if ((seatCount ?? 0) >= MAX_SEATS) {
+      return json({ success: false, message: "정원을 초과 하였습니다." }, 200, origin);
+    }
+  }
 
   const { error: updateError } = await supabase
     .from("vibe_coding_class_info")
