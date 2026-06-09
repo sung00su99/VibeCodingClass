@@ -1,5 +1,3 @@
-const LOCKED = true; // 입력 잠금 — 수정 불가 모드
-
 const SUPABASE_URL  = "https://ktqkjvdzqxdkicvmlzni.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cWtqdmR6cXhka2ljdm1sem5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgyMjEsImV4cCI6MjA5NTk5NDIyMX0.ECPVWXqmP337qmlJg3mHO2ViXrSPi1jvaiN1IZirWYk";
 const EDGE_ATTENDANCE = `${SUPABASE_URL}/functions/v1/attendance`;
@@ -87,7 +85,7 @@ function renderGrid() {
           <div class="card-seqno"></div>
           <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate ${guestDateClass}">${guestDateLabel}</span></div>
           <div class="card-title"></div>
-          ${LOCKED ? "" : `<button class="card-delete-btn" onclick="event.stopPropagation();deleteGuestMember(${m.id})">
+          <button class="card-delete-btn" onclick="event.stopPropagation();deleteGuestMember(${m.id})">
             <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <polyline points="3 6 5 6 21 6"></polyline>
               <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
@@ -95,7 +93,7 @@ function renderGrid() {
               <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
             </svg>
             삭제
-          </button>`}
+          </button>
         `;
       } else {
         const badgeClass =
@@ -114,7 +112,7 @@ function renderGrid() {
           <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate ${dateClass}">${dateLabel}</span></div>
           <div class="card-title">${escHtml(m.title || "")}</div>
         `;
-        if (!LOCKED) card.addEventListener("click", () => openPopup(m));
+        card.addEventListener("click", () => openPopup(m));
       }
 
       cards.appendChild(card);
