@@ -1,3 +1,7 @@
+const DATE_1    = "2026-06-16";
+const DATE_2    = "2026-06-17";
+const MAX_SEATS = 9;
+
 const SUPABASE_URL  = "https://ktqkjvdzqxdkicvmlzni.supabase.co";
 const SUPABASE_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt0cWtqdmR6cXhka2ljdm1sem5pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA0MTgyMjEsImV4cCI6MjA5NTk5NDIyMX0.ECPVWXqmP337qmlJg3mHO2ViXrSPi1jvaiN1IZirWYk";
 const EDGE_ATTENDANCE = `${SUPABASE_URL}/functions/v1/attendance`;
@@ -25,8 +29,8 @@ async function loadMembers() {
 /* ===== 통계 바 ===== */
 function renderStats() {
   const total = members.length;
-  const attend1 = members.filter((m) => m.classyn === "Y" && m.meetingdate === "2026-06-09").length;
-  const attend2 = members.filter((m) => m.classyn === "Y" && m.meetingdate === "2026-06-10").length;
+  const attend1 = members.filter((m) => m.classyn === "Y" && m.meetingdate === DATE_1).length;
+  const attend2 = members.filter((m) => m.classyn === "Y" && m.meetingdate === DATE_2).length;
   const unconfirmed = members.filter((m) => m.classyn !== "Y" && m.classyn !== "N").length;
 
   document.getElementById("stat-total").textContent = total;
@@ -85,7 +89,7 @@ function renderGrid() {
       const card = document.createElement("div");
 
       if (m.dept === "기타") {
-        const guestDateClass = m.meetingdate === "2026-06-09" ? "date-1" : m.meetingdate === "2026-06-10" ? "date-2" : "";
+        const guestDateClass = m.meetingdate === DATE_1 ? "date-1" : m.meetingdate === DATE_2 ? "date-2" : "";
         const guestDateLabel = m.meetingdate
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
@@ -111,7 +115,7 @@ function renderGrid() {
         const badgeText = m.classyn === "Y" ? "참석" : m.classyn === "N" ? "불참" : "미정";
         const cardClass = m.classyn === "Y" ? "attend" : m.classyn === "N" ? "absent" : "";
 
-        const dateClass = m.meetingdate === "2026-06-09" ? "date-1" : m.meetingdate === "2026-06-10" ? "date-2" : "";
+        const dateClass = m.meetingdate === DATE_1 ? "date-1" : m.meetingdate === DATE_2 ? "date-2" : "";
         const dateLabel = m.meetingdate
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
@@ -239,6 +243,20 @@ function openPopup(member) {
   }
 
   document.getElementById("select-classyn").value = "Y";
+
+  // 회차 선택 — 잔여 정원 표시 및 기존 선택 복원
+  const selfId = member.id;
+  const cnt1 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_1 && m.id !== selfId).length;
+  const cnt2 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_2 && m.id !== selfId).length;
+  const sel = document.getElementById("select-session");
+  sel.options[0].text     = `1차 (06. 16) — 잔여 ${Math.max(0, MAX_SEATS - cnt1)}석`;
+  sel.options[0].disabled = cnt1 >= MAX_SEATS;
+  sel.options[1].text     = `2차 (06. 17) — 잔여 ${Math.max(0, MAX_SEATS - cnt2)}석`;
+  sel.options[1].disabled = cnt2 >= MAX_SEATS;
+  sel.value = (member.classyn === "Y" && member.meetingdate) ? member.meetingdate
+            : cnt1 < MAX_SEATS ? DATE_1 : DATE_2;
+
+  toggleSessionSelect("Y");
   document.getElementById("popup-overlay").classList.add("active");
   if (!emailInput.disabled) emailInput.focus();
 }
@@ -257,7 +275,7 @@ function closePopup() {
 async function confirmAttendance() {
   if (!selectedMember) return;
 
-  const email  = document.getElementById("input-email").value.trim();
+  const email   = document.getElementById("input-email").value.trim();
   const classyn = document.getElementById("select-classyn").value;
 
   if (!email) {
@@ -265,8 +283,20 @@ async function confirmAttendance() {
     return;
   }
 
+  let meetingdate = null;
+  if (classyn === "Y") {
+    meetingdate = document.getElementById("select-session").value;
+    const taken = members.filter(
+      m => m.classyn === "Y" && m.meetingdate === meetingdate && m.id !== selectedMember.id
+    ).length;
+    if (taken >= MAX_SEATS) {
+      showToast("정원을 초과 하였습니다", "error");
+      return;
+    }
+  }
+
   try {
-    const data = await callEdge({ id: selectedMember.id, email, classyn });
+    const data = await callEdge({ id: selectedMember.id, email, classyn, meetingdate });
     if (data.success) {
       if (selectedMember.dept !== "기타") {
         localStorage.setItem(`vibeauth_${selectedMember.id}`, email);
@@ -280,6 +310,11 @@ async function confirmAttendance() {
   } catch (e) {
     showToast("서버 연결 오류가 발생했습니다.", "error");
   }
+}
+
+/* ===== 회차 선택 표시/숨김 ===== */
+function toggleSessionSelect(val) {
+  document.getElementById("group-session").style.display = val === "Y" ? "" : "none";
 }
 
 /* ===== 토스트 메시지 ===== */

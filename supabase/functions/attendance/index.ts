@@ -31,7 +31,8 @@ Deno.serve(async (req: Request) => {
     return json({ success: false, message: "허용되지 않는 메서드입니다." }, 405, origin);
   }
 
-  let body: { action?: unknown; id?: unknown; email?: unknown; classyn?: unknown; name?: unknown };
+  const VALID_DATES = ["2026-06-16", "2026-06-17"];
+  let body: { action?: unknown; id?: unknown; email?: unknown; classyn?: unknown; name?: unknown; meetingdate?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -52,9 +53,10 @@ Deno.serve(async (req: Request) => {
       return json({ success: false, message: "이름과 이메일은 필수입니다." }, 400, origin);
     }
 
+    const addDate = VALID_DATES.includes(String(body.meetingdate ?? "")) ? String(body.meetingdate) : VALID_DATES[0];
     const { data, error } = await supabase
       .from("vibe_coding_class_info")
-      .insert({ name, email, dept: "기타", classyn: "Y", seqno: "9999", meetingdate: "2026-06-10" })
+      .insert({ name, email, dept: "기타", classyn: "Y", seqno: "9999", meetingdate: addDate })
       .select("id")
       .single();
 
@@ -110,9 +112,12 @@ Deno.serve(async (req: Request) => {
     return json({ success: false, message: "사용자 인증에 실패 했습니다." }, 401, origin);
   }
 
+  const rawDate = String(body.meetingdate ?? "").trim();
+  const meetingdate = (classyn === "Y" && VALID_DATES.includes(rawDate)) ? rawDate : null;
+
   const { error: updateError } = await supabase
     .from("vibe_coding_class_info")
-    .update({ classyn, meetingdate: "2026-06-10" })
+    .update({ classyn, meetingdate })
     .eq("id", memberId);
 
   if (updateError) {
