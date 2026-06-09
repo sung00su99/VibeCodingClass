@@ -9,7 +9,7 @@ let selectedMember = null;
 async function loadMembers() {
   try {
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,classyn,meetingdate&order=seqno`,
+      `${SUPABASE_URL}/rest/v1/vibe_coding_class_info?select=id,seqno,dept,name,title,email,classyn,meetingdate&order=seqno`,
       { headers: { apikey: SUPABASE_ANON, Authorization: `Bearer ${SUPABASE_ANON}` } }
     );
     if (!res.ok) throw new Error("서버 응답 오류");
@@ -152,6 +152,16 @@ async function addGuestMember() {
 
   if (!name)  { showToast("이름을 입력해 주세요.", "error");  return; }
   if (!email) { showToast("이메일을 입력해 주세요.", "error"); return; }
+
+  const existing = members.find(
+    (m) => m.dept !== "기타" && m.email && m.email.toLowerCase() === email.toLowerCase()
+  );
+  if (existing) {
+    document.getElementById("guest-name").value  = "";
+    document.getElementById("guest-email").value = "";
+    showToast("대상자는 아래 이름을 확인하시고 클릭 후 팝업창에 입력해 주시기 바랍니다.", "warn");
+    return;
+  }
 
   try {
     const data = await callEdge({ action: "add", name, email });

@@ -500,6 +500,11 @@ body {
   color: #fff;
 }
 
+#toast.warn {
+  background: #7b5400;
+  color: #fff;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 860px) {
   #page-body {
