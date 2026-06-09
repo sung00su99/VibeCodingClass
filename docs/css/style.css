@@ -268,6 +268,15 @@ body {
   color: #718096;
 }
 
+.crown-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  vertical-align: middle;
+  position: relative;
+  top: -1px;
+}
+
 .member-card .card-meetingdate {
   font-size: 0.82rem;
   font-weight: 700;

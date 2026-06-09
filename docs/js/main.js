@@ -35,6 +35,9 @@ function renderStats() {
   document.getElementById("stat-absent").textContent = unconfirmed;
 }
 
+const TITLE_ORDER = { "팀장": 0, "수석": 1, "수석보": 2, "책임": 3, "선임": 4, "사원": 5 };
+const SORT_DEPTS  = new Set(["자동화1팀", "자동화2팀"]);
+
 /* ===== 카드 그리드 렌더링 (DEPT별 섹션) ===== */
 function renderGrid() {
   const grid = document.getElementById("member-grid");
@@ -50,6 +53,13 @@ function renderGrid() {
       depts.push(m.dept);
     }
     deptMap[m.dept].push(m);
+  });
+
+  // 자동화1/2팀 직함 순 정렬 (팀장→수석→수석보→책임→선임→사원)
+  depts.forEach((dept) => {
+    if (SORT_DEPTS.has(dept)) {
+      deptMap[dept].sort((a, b) => (TITLE_ORDER[a.title] ?? 99) - (TITLE_ORDER[b.title] ?? 99));
+    }
   });
 
   // 기타 부서는 항상 마지막
@@ -105,11 +115,14 @@ function renderGrid() {
         const dateLabel = m.meetingdate
           ? ` | 참석일: ${m.meetingdate.slice(5).replace('-', '.')}`
           : '';
+        const crownHtml = m.title === "팀장"
+          ? `<span class="crown-icon"><svg width="11" height="11" viewBox="0 0 24 20" fill="#FFD700"><polygon points="0,20 4,8 12,14 20,2 22,14 28,8 24,20"/><rect x="0" y="17" width="24" height="3" fill="#FFD700"/></svg></span>`
+          : "";
         card.className = `member-card ${cardClass}`;
         card.innerHTML = `
           <span class="card-badge ${badgeClass}">${badgeText}</span>
           <div class="card-seqno">${escHtml(m.seqno || "")}</div>
-          <div class="card-name">${escHtml(m.name)}<span class="card-meetingdate ${dateClass}">${dateLabel}</span></div>
+          <div class="card-name">${escHtml(m.name)}${crownHtml}<span class="card-meetingdate ${dateClass}">${dateLabel}</span></div>
           <div class="card-title">${escHtml(m.title || "")}</div>
         `;
         card.addEventListener("click", () => openPopup(m));
