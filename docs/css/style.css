@@ -491,6 +491,20 @@ body {
 
 #btn-cancel:hover { background: #f7fafc; }
 
+#btn-delete {
+  width: 100%;
+  padding: 10px;
+  background: #fff;
+  color: #c53030;
+  border: 1.5px solid #fed7d7;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#btn-delete:hover { background: #fff5f5; border-color: #fc8181; }
+
 /* ===== Toast Message ===== */
 #toast {
   display: none;

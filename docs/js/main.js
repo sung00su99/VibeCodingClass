@@ -281,6 +281,11 @@ function openPopup(member) {
             : cnt1 < MAX_SEATS ? DATE_1 : DATE_2;
 
   toggleSessionSelect("Y");
+
+  // 이미 참여 정보가 있으면 삭제 버튼 표시
+  document.getElementById("btn-delete").style.display =
+    (member.classyn === "Y" || member.classyn === "N") ? "" : "none";
+
   document.getElementById("popup-overlay").classList.add("active");
   if (!emailInput.disabled) emailInput.focus();
 }
@@ -326,6 +331,31 @@ async function confirmAttendance() {
         localStorage.setItem(`vibeauth_${selectedMember.id}`, email);
       }
       showToast(data.message, "success");
+      closePopup();
+      await loadMembers();
+    } else {
+      showToast(data.message, "error");
+    }
+  } catch (e) {
+    showToast("서버 연결 오류가 발생했습니다.", "error");
+  }
+}
+
+/* ===== 참여 정보 삭제 ===== */
+async function deleteAttendance() {
+  if (!selectedMember) return;
+
+  const email = document.getElementById("input-email").value.trim();
+  if (!email) {
+    showToast("이메일 주소를 입력해 주세요.", "error");
+    return;
+  }
+
+  try {
+    const data = await callEdge({ action: "clear", id: selectedMember.id, email });
+    if (data.success) {
+      localStorage.removeItem(`vibeauth_${selectedMember.id}`);
+      showToast("참여 정보가 삭제되었습니다.", "success");
       closePopup();
       await loadMembers();
     } else {
