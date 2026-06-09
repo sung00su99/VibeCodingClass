@@ -344,15 +344,8 @@ async function confirmAttendance() {
 /* ===== 참여 정보 삭제 ===== */
 async function deleteAttendance() {
   if (!selectedMember) return;
-
-  const email = document.getElementById("input-email").value.trim();
-  if (!email) {
-    showToast("이메일 주소를 입력해 주세요.", "error");
-    return;
-  }
-
   try {
-    const data = await callEdge({ action: "clear", id: selectedMember.id, email });
+    const data = await callEdge({ action: "clear", id: selectedMember.id });
     if (data.success) {
       localStorage.removeItem(`vibeauth_${selectedMember.id}`);
       showToast("참여 정보가 삭제되었습니다.", "success");

@@ -91,29 +91,13 @@ Deno.serve(async (req: Request) => {
 
   // ── 참여 정보 초기화 ───────────────────────────────────────────────────
   if (body.action === "clear") {
-    const clearId    = body.id;
-    const clearEmail = String(body.email ?? "").trim().toLowerCase();
-    if (!clearId || !clearEmail) {
-      return json({ success: false, message: "id와 email은 필수입니다." }, 400, origin);
+    if (!body.id) {
+      return json({ success: false, message: "id는 필수입니다." }, 400, origin);
     }
-
-    const { data: target, error: fetchErr } = await supabase
-      .from("vibe_coding_class_info")
-      .select("id, email")
-      .eq("id", clearId)
-      .single();
-
-    if (fetchErr || !target) {
-      return json({ success: false, message: "사용자를 찾을 수 없습니다." }, 404, origin);
-    }
-    if (clearEmail !== String(target.email ?? "").trim().toLowerCase()) {
-      return json({ success: false, message: "사용자 인증에 실패 했습니다." }, 401, origin);
-    }
-
     const { error: clearErr } = await supabase
       .from("vibe_coding_class_info")
       .update({ classyn: null, meetingdate: null })
-      .eq("id", clearId);
+      .eq("id", body.id);
 
     if (clearErr) {
       console.error("CLEAR 오류:", clearErr);
