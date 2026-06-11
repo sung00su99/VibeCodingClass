@@ -1,5 +1,5 @@
-const DATE_1    = "2026-06-18";
-const DATE_2    = "2026-06-17";
+const DATE_1    = "2026-06-17";
+const DATE_2    = "2026-06-18";
 const MAX_SEATS = 9;
 
 const SUPABASE_URL  = "https://ktqkjvdzqxdkicvmlzni.supabase.co";
@@ -47,9 +47,9 @@ function updateGuestSessionOptions() {
   if (!sel) return;
   const cnt1 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_1).length;
   const cnt2 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_2).length;
-  sel.options[0].text     = `1차 (06. 18) — 잔여 ${Math.max(0, MAX_SEATS - cnt1)}석`;
+  sel.options[0].text     = `1차 (06. 17) — 잔여 ${Math.max(0, MAX_SEATS - cnt1)}석`;
   sel.options[0].disabled = cnt1 >= MAX_SEATS;
-  sel.options[1].text     = `2차 (06. 17) — 잔여 ${Math.max(0, MAX_SEATS - cnt2)}석`;
+  sel.options[1].text     = `2차 (06. 18) — 잔여 ${Math.max(0, MAX_SEATS - cnt2)}석`;
   sel.options[1].disabled = cnt2 >= MAX_SEATS;
   if (sel.options[sel.selectedIndex]?.disabled) {
     sel.selectedIndex = sel.options[0].disabled ? 1 : 0;
@@ -273,9 +273,9 @@ function openPopup(member) {
   const cnt1 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_1 && m.id !== selfId).length;
   const cnt2 = members.filter(m => m.classyn === "Y" && m.meetingdate === DATE_2 && m.id !== selfId).length;
   const sel = document.getElementById("select-session");
-  sel.options[0].text     = `1차 (06. 18) — 잔여 ${Math.max(0, MAX_SEATS - cnt1)}석`;
+  sel.options[0].text     = `1차 (06. 17) — 잔여 ${Math.max(0, MAX_SEATS - cnt1)}석`;
   sel.options[0].disabled = cnt1 >= MAX_SEATS;
-  sel.options[1].text     = `2차 (06. 17) — 잔여 ${Math.max(0, MAX_SEATS - cnt2)}석`;
+  sel.options[1].text     = `2차 (06. 18) — 잔여 ${Math.max(0, MAX_SEATS - cnt2)}석`;
   sel.options[1].disabled = cnt2 >= MAX_SEATS;
   sel.value = (member.classyn === "Y" && member.meetingdate) ? member.meetingdate
             : cnt1 < MAX_SEATS ? DATE_1 : DATE_2;
